@@ -347,5 +347,17 @@ class DatabaseSeeder extends Seeder
                   )
             ");
         }
+
+        // CALIFICACION.codigo_grupo - enlazar cada nota con el grupo del postulante
+        if (\Illuminate\Support\Facades\Schema::hasColumn('calificacion', 'codigo_grupo')) {
+            DB::statement("
+                UPDATE calificacion
+                SET codigo_grupo = p.codigo_grupo
+                FROM postulante p
+                WHERE p.id = calificacion.registro_postulante
+                  AND calificacion.codigo_grupo IS NULL
+                  AND p.codigo_grupo IS NOT NULL
+            ");
+        }
     }
 }

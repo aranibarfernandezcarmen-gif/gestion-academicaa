@@ -385,7 +385,14 @@ const mostrarAceptados = async (cupo) => {
   showAceptadosModal.value = true;
   try {
     const res = await axios.get(`/cu07/cupo/${cupo.cupo_codigo}/aceptados`);
-    aceptados.value = res.data;
+    const data = res.data;
+    // Respuesta nueva: { postulantes, cupos_disponibles } (compatible con array antiguo)
+    aceptados.value = Array.isArray(data) ? data : (data.postulantes || []);
+    if (!Array.isArray(data) && data.cupos_disponibles !== undefined && data.cupos_disponibles !== null) {
+      // Refrescar en vivo el cupo disponible en la tabla
+      cupo.cupos_disponibles = data.cupos_disponibles;
+      cupoActual.value = { ...cupo };
+    }
   } catch (e) {
     alert('Error al cargar postulantes: ' + (e.response?.data?.message || e.message));
     showAceptadosModal.value = false;

@@ -125,24 +125,64 @@ class CU07ConfigurarCuposController extends Controller
             return response()->json(['message' => 'Cupo no encontrado'], 404);
         }
 
-        $postulantes = DB::table('calificacion')
-            ->join('postulante', 'calificacion.registro_postulante', '=', 'postulante.id')
+        // Un postulante tiene "Promedio Final" (CU06) solo si tiene nota en TODAS
+        // las materias (grupos). Aquí calculamos cuántos grupos hay para exigirlo.
+        $numGrupos = (int) DB::table('grupo')->count();
+
+        // Postulantes ACEPTADOS de esta carrera: tienen Promedio Final (notas en las
+        // 4 materias) y ese promedio final es >= 60. Se agrupa por postulante.
+        $postulantes = DB::table('postulante')
             ->join('persona', 'postulante.id_persona', '=', 'persona.id')
+            ->join('calificacion', function ($join) {
+                $join->on('calificacion.registro_postulante', '=', 'postulante.id')
+                     ->whereNotNull('calificacion.promedio');
+            })
             ->leftJoin('carrera', 'postulante.carrera_primera_opcion_id', '=', 'carrera.codigo')
+            ->where('postulante.carrera_primera_opcion_id', $cupo->carrera_id)
+            ->where('postulante.estado_asignacion', '<>', 'Eliminado')
+            ->groupBy(
+                'postulante.id', 'postulante.registro', 'postulante.carrera_asignada_id',
+                'persona.ci', 'persona.nombre', 'persona.apellido', 'carrera.nombre_carrera'
+            )
+            ->havingRaw('COUNT(DISTINCT calificacion.codigo_grupo) >= ? AND AVG(calificacion.promedio) >= 60', [$numGrupos])
             ->select(
+                'postulante.id',
                 'postulante.registro',
+                'postulante.carrera_asignada_id',
                 'persona.ci',
                 DB::raw("persona.nombre || ' ' || persona.apellido AS nombre_completo"),
                 DB::raw("COALESCE(carrera.nombre_carrera, '—') AS carrera_ingresada"),
-                'calificacion.promedio'
+                DB::raw('ROUND(AVG(calificacion.promedio), 2) AS promedio')
             )
-            ->where('postulante.carrera_primera_opcion_id', $cupo->carrera_id)
-            ->where('calificacion.promedio', '>=', 60)
-            ->whereNotNull('calificacion.promedio')
-            ->orderBy('calificacion.promedio', 'desc')
+            ->orderByRaw('AVG(calificacion.promedio) DESC')
             ->get();
 
-        return response()->json($postulantes);
+        // Descontar 1 cupo por cada aceptado que AÚN NO está asignado a esta carrera.
+        // Es idempotente: si se vuelve a dar "Mostrar", los ya marcados no restan otra vez.
+        DB::transaction(function () use ($postulantes, $cupo) {
+            foreach ($postulantes as $p) {
+                $yaAsignado = (int) ($p->carrera_asignada_id ?? 0) === (int) $cupo->carrera_id;
+                if (! $yaAsignado) {
+                    DB::table('cupo_carrera')
+                        ->where('codigo', $cupo->codigo)
+                        ->where('cupos_disponibles', '>', 0)
+                        ->decrement('cupos_disponibles');
+
+                    // Marca de idempotencia: queda asignado a esta carrera, así un
+                    // segundo "Mostrar" no vuelve a descontar cupo por el mismo postulante.
+                    DB::table('postulante')->where('id', $p->id)->update([
+                        'carrera_asignada_id' => $cupo->carrera_id,
+                    ]);
+                }
+            }
+        });
+
+        $cuposDisponibles = DB::table('cupo_carrera')->where('codigo', $cupo_codigo)->value('cupos_disponibles');
+
+        return response()->json([
+            'postulantes'       => $postulantes,
+            'cupos_disponibles' => $cuposDisponibles,
+        ]);
     }
 
     public function destroy($cupo_codigo)

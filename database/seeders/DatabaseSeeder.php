@@ -359,6 +359,34 @@ class DatabaseSeeder extends Seeder
                   AND calificacion.codigo_grupo IS NULL
                   AND p.codigo_grupo IS NOT NULL
             ");
+
+            // Replicar la nota base de cada postulante a las 4 materias (para que
+            // CU06 calcule el Promedio Final y CU07 muestre aceptados).
+            $seqRow = DB::selectOne("SELECT pg_get_serial_sequence('calificacion', 'id') AS seq");
+            if (($seqRow->seq ?? null)) {
+                $max = DB::table('calificacion')->max('id');
+                if ($max !== null) {
+                    DB::statement("SELECT setval('{$seqRow->seq}', {$max}, true)");
+                }
+            }
+            DB::statement("
+                INSERT INTO calificacion (nota1, nota2, nota3, promedio, estado, registro_postulante, codigo_grupo, codigo_examen)
+                SELECT base.nota1, base.nota2, base.nota3, base.promedio, base.estado,
+                       base.registro_postulante, g.codigo, base.codigo_examen
+                FROM (
+                    SELECT DISTINCT ON (registro_postulante)
+                           registro_postulante, nota1, nota2, nota3, promedio, estado, codigo_examen
+                    FROM calificacion
+                    WHERE promedio IS NOT NULL
+                    ORDER BY registro_postulante, id
+                ) base
+                CROSS JOIN grupo g
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM calificacion c2
+                    WHERE c2.registro_postulante = base.registro_postulante
+                      AND c2.codigo_grupo = g.codigo
+                )
+            ");
         }
     }
 }

@@ -126,7 +126,7 @@ class CU07ConfigurarCuposController extends Controller
         }
 
         $postulantes = DB::table('calificacion')
-            ->join('postulante', 'calificacion.registro_postulante', '=', 'postulante.registro')
+            ->join('postulante', 'calificacion.registro_postulante', '=', 'postulante.id')
             ->join('persona', 'postulante.id_persona', '=', 'persona.id')
             ->leftJoin('carrera', 'postulante.carrera_primera_opcion_id', '=', 'carrera.codigo')
             ->select(

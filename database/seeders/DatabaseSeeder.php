@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
         DB::table('grupo')->insert([
             ['codigo' => 1, 'nombre_grupo' => 'G1-INF-2026', 'capacidad_maxima' => 70, 'codigo_materia' => 4, 'codigo_docente' => 3, 'codigo_horario' => 1],
             ['codigo' => 2, 'nombre_grupo' => 'G2-MAT-2026', 'capacidad_maxima' => 70, 'codigo_materia' => 2, 'codigo_docente' => 1, 'codigo_horario' => 2],
-            ['codigo' => 3, 'nombre_grupo' => 'G3-FIS-2026', 'capacidad_maxima' => 70, 'codigo_materia' => 2, 'codigo_docente' => 2, 'codigo_horario' => 3],
+            ['codigo' => 3, 'nombre_grupo' => 'G3-FIS-2026', 'capacidad_maxima' => 70, 'codigo_materia' => 1, 'codigo_docente' => 2, 'codigo_horario' => 3],
             ['codigo' => 4, 'nombre_grupo' => 'G4-ING-2026', 'capacidad_maxima' => 70, 'codigo_materia' => 3, 'codigo_docente' => 4, 'codigo_horario' => 4],
         ]);
 

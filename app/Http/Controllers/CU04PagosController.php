@@ -57,14 +57,28 @@ class CU04PagosController extends Controller
             ->orderBy('pago.created_at', 'desc')
             ->get();
         
+        // Estadísticas basadas en el estado de pago de la INSCRIPCIÓN de cada
+        // postulante (CU03), no solo en la tabla 'pago' (transferencias). Así se
+        // cuentan también los pendientes por pago físico y los pagados de CU03.
+        // Se actualiza solo: al pagar, la inscripción pasa a 'Pagado' y los conteos
+        // se recalculan en la siguiente carga.
+        $baseQuery = DB::table('postulante')
+            ->leftJoin('inscripcion', 'postulante.codigo_inscripcion', '=', 'inscripcion.id')
+            ->where('postulante.estado_asignacion', '!=', 'Eliminado');
+
+        $totalPostulantes = (clone $baseQuery)->count();
+        $pagados    = (clone $baseQuery)->where('inscripcion.estado_pago', 'Pagado')->count();
+        $rechazados = (clone $baseQuery)->where('inscripcion.estado_pago', 'Rechazado')->count();
+        $pendientes = max(0, $totalPostulantes - $pagados - $rechazados);
+
         return response()->json([
             'pagos' => $pagos,
             'estadisticas' => [
-                'total_pagos' => count($pagos),
-                'monto_total' => $pagos->sum('monto'),
-                'pagos_completados' => $pagos->where('estado', 'Completado')->count(),
-                'pagos_pendientes' => $pagos->where('estado', 'Pendiente')->count(),
-                'pagos_rechazados' => $pagos->where('estado', 'Rechazado')->count(),
+                'total_pagos' => $totalPostulantes,
+                'monto_total' => $pagados * 150,
+                'pagos_completados' => $pagados,
+                'pagos_pendientes' => $pendientes,
+                'pagos_rechazados' => $rechazados,
             ]
         ]);
     }

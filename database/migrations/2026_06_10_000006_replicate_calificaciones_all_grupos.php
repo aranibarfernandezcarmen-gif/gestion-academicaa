@@ -20,6 +20,11 @@ return new class extends Migration
             return;
         }
 
+        // El trigger fn_calificacion_insert pone estado='Aprobado'/'Reprobado' (mayúscula
+        // inicial), pero el enum dejó un CHECK que solo acepta 'APROBADO'/'REPROBADO'.
+        // Ese CHECK rompe TODO insert de calificacion (CU05 y esta migración). Lo quitamos.
+        DB::statement('ALTER TABLE calificacion DROP CONSTRAINT IF EXISTS calificacion_estado_check');
+
         // Asegurar que la secuencia del id esté al día (evita choque de llave al insertar)
         $seqRow = DB::selectOne("SELECT pg_get_serial_sequence('calificacion', 'id') AS seq");
         $seq = $seqRow->seq ?? null;

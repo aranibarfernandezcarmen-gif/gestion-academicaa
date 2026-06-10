@@ -42,6 +42,10 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      # Reinicia la BD desde cero al arrancar (BORRA datos). Úsalo UNA vez para
+      # limpiar el estado corrupto de los intentos previos; luego ponlo en false.
+      - key: FRESH_MIGRATE
+        value: "true"
       # Cargar datos de prueba en el primer arranque. Cámbialo a false tras el primer deploy.
       - key: RUN_SEED
         value: "true"

@@ -22,14 +22,12 @@ return new class extends Migration
             }
         });
 
-        // Cambiar horario_trabajo a JSONB
+        // Mantener horario_trabajo como TEXTO (la app lo valida como string y el
+        // seeder inserta valores tipo "08:00-16:00"). La conversión a jsonb rompía
+        // el despliegue porque esos valores no son JSON válido. Solo lo hacemos
+        // nullable para que coincida con la validación 'nullable' de la app.
         if (Schema::hasColumn('administrativo', 'horario_trabajo')) {
-            // Primero hacer nullable
             DB::statement("ALTER TABLE administrativo ALTER COLUMN horario_trabajo DROP NOT NULL");
-            // Actualizar a valores vacíos con un JSON válido
-            DB::statement("UPDATE administrativo SET horario_trabajo = '{}' WHERE horario_trabajo IS NULL OR horario_trabajo = ''");
-            // Ahora cambiar el tipo
-            DB::statement("ALTER TABLE administrativo ALTER COLUMN horario_trabajo TYPE jsonb USING horario_trabajo::jsonb");
         }
     }
 

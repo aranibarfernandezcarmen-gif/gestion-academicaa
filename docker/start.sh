@@ -7,8 +7,16 @@ php artisan package:discover --ansi || true
 php artisan config:clear || true
 php artisan cache:clear || true
 
-# Crear/actualizar tablas (incluye sessions, cache y jobs)
-php artisan migrate --force
+# Migraciones.
+# Si FRESH_MIGRATE=true => reinicia la BD desde cero (¡BORRA TODOS LOS DATOS!).
+# Úsalo UNA sola vez para limpiar un estado corrupto y luego ponlo en false,
+# de lo contrario perderás los datos cada vez que el servicio reinicie.
+if [ "$FRESH_MIGRATE" = "true" ]; then
+  echo ">> FRESH_MIGRATE=true -> migrate:fresh (se REINICIA la base de datos)"
+  php artisan migrate:fresh --force
+else
+  php artisan migrate --force
+fi
 
 # Cargar datos de prueba SOLO si RUN_SEED=true (ponlo en true en el primer deploy
 # y luego cámbialo a false para no duplicar datos en cada reinicio).

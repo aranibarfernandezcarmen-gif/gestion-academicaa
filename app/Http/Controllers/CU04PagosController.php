@@ -35,40 +35,99 @@ class CU04PagosController extends Controller
     /**
      * Obtener todos los pagos con información del postulante
      */
-    public function getPagos(Request $request)
+    /**
+     * Query base de postulantes con su estado de pago (inscripción), con filtros.
+     * La lista y el reporte se basan en POSTULANTES (CU03), no solo en la tabla 'pago'.
+     */
+    private function postulantesPagosQuery(Request $request)
     {
-        // Retorna TODOS los pagos sin filtros complejos que pueden fallar
-        $pagos = DB::table('pago')
-            ->select([
-                'pago.id',
-                'pago.id_postulante',
-                'pago.monto',
-                'pago.fecha_pago',
-                'pago.hora_pago',
-                'pago.estado',
-                'pago.metodo_pago',
-                'pago.created_at',
-                DB::raw("COALESCE(persona.nombre, '') as nombre"),
-                DB::raw("COALESCE(persona.apellido, '') as apellido"),
-                DB::raw("COALESCE(persona.ci, '') as ci"),
-            ])
-            ->leftJoin('postulante', 'pago.id_postulante', '=', 'postulante.id')
-            ->leftJoin('persona', 'postulante.id_persona', '=', 'persona.id')
-            ->orderBy('pago.created_at', 'desc')
-            ->get();
-        
-        // Estadísticas basadas en el estado de pago de la INSCRIPCIÓN de cada
-        // postulante (CU03), no solo en la tabla 'pago' (transferencias). Así se
-        // cuentan también los pendientes por pago físico y los pagados de CU03.
-        // Se actualiza solo: al pagar, la inscripción pasa a 'Pagado' y los conteos
-        // se recalculan en la siguiente carga.
-        $baseQuery = DB::table('postulante')
+        $query = DB::table('postulante')
+            ->join('persona', 'postulante.id_persona', '=', 'persona.id')
             ->leftJoin('inscripcion', 'postulante.codigo_inscripcion', '=', 'inscripcion.id')
             ->where('postulante.estado_asignacion', '!=', 'Eliminado');
 
-        $totalPostulantes = (clone $baseQuery)->count();
-        $pagados    = (clone $baseQuery)->where('inscripcion.estado_pago', 'Pagado')->count();
-        $rechazados = (clone $baseQuery)->where('inscripcion.estado_pago', 'Rechazado')->count();
+        if ($request->filled('estado')) {
+            switch ($request->estado) {
+                case 'Completado':
+                    $query->where('inscripcion.estado_pago', 'Pagado');
+                    break;
+                case 'Rechazado':
+                    $query->where('inscripcion.estado_pago', 'Rechazado');
+                    break;
+                case 'Pendiente':
+                    $query->where(function ($q) {
+                        $q->whereNull('inscripcion.estado_pago')
+                          ->orWhereNotIn('inscripcion.estado_pago', ['Pagado', 'Rechazado']);
+                    });
+                    break;
+                default:
+                    // Procesando/Cancelado no aplican al modelo de inscripción
+                    $query->whereRaw('1 = 0');
+            }
+        }
+        if ($request->filled('id_postulante')) {
+            $query->where('postulante.id', $request->id_postulante);
+        }
+        if ($request->filled('fecha_inicio')) {
+            $query->whereDate('inscripcion.fecha_inscripcion', '>=', $request->fecha_inicio);
+        }
+        if ($request->filled('fecha_fin')) {
+            $query->whereDate('inscripcion.fecha_inscripcion', '<=', $request->fecha_fin);
+        }
+
+        return $query;
+    }
+
+    public function getPagos(Request $request)
+    {
+        // Lista basada en POSTULANTES (estado de pago de su inscripción = CU03),
+        // no solo en la tabla 'pago'. Así aparecen los pagados y pendientes de CU03.
+        $rows = $this->postulantesPagosQuery($request)
+            ->select(
+                'postulante.id',
+                'postulante.registro',
+                'persona.nombre',
+                'persona.apellido',
+                'persona.ci',
+                'inscripcion.estado_pago',
+                'inscripcion.fecha_inscripcion'
+            )
+            ->orderBy('postulante.id', 'desc')
+            ->get();
+
+        // Pago real (si existe) por postulante, para mostrar monto/fecha/hora/método
+        $pagosByPostulante = DB::table('pago')
+            ->whereNotNull('id_postulante')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->groupBy('id_postulante');
+
+        $pagos = $rows->map(function ($r) use ($pagosByPostulante) {
+            $estadoPago = $r->estado_pago ?: 'Pendiente';
+            $estado = $estadoPago === 'Pagado' ? 'Completado'
+                    : ($estadoPago === 'Rechazado' ? 'Rechazado' : 'Pendiente');
+            $pago = optional($pagosByPostulante->get($r->id))->first();
+            return [
+                'id'          => $r->id,            // id del postulante (para las acciones)
+                'registro'    => $r->registro,
+                'nombre'      => $r->nombre,
+                'apellido'    => $r->apellido,
+                'ci'          => $r->ci,
+                'monto'       => $pago->monto ?? 150,
+                'fecha_pago'  => $pago->fecha_pago ?? $r->fecha_inscripcion,
+                'hora_pago'   => $pago->hora_pago ?? null,
+                'estado'      => $estado,
+                'metodo_pago' => $pago->metodo_pago ?? ($estado === 'Completado' ? 'Efectivo' : 'Físico'),
+            ];
+        })->values();
+
+        // Estadísticas (basadas en inscripción, sin filtros)
+        $base = DB::table('postulante')
+            ->leftJoin('inscripcion', 'postulante.codigo_inscripcion', '=', 'inscripcion.id')
+            ->where('postulante.estado_asignacion', '!=', 'Eliminado');
+        $totalPostulantes = (clone $base)->count();
+        $pagados    = (clone $base)->where('inscripcion.estado_pago', 'Pagado')->count();
+        $rechazados = (clone $base)->where('inscripcion.estado_pago', 'Rechazado')->count();
         $pendientes = max(0, $totalPostulantes - $pagados - $rechazados);
 
         return response()->json([
@@ -385,28 +444,46 @@ class CU04PagosController extends Controller
      */
     public function validarPago(Request $request, $id)
     {
+        // $id ahora es el ID del POSTULANTE (la lista es por postulantes).
         $validated = $request->validate([
             'validar' => 'required|boolean',
         ]);
 
         try {
-            $pago = Pago::findOrFail($id);
-
-            if ($validated['validar']) {
-                $pago->update(['estado' => 'Completado']);
-                $mensaje = 'Pago validado y completado';
-            } else {
-                $pago->update(['estado' => 'Rechazado']);
-                $mensaje = 'Pago rechazado';
+            $postulante = DB::table('postulante')->where('id', $id)->first();
+            if (!$postulante) {
+                return response()->json(['error' => 'Postulante no encontrado'], 404);
             }
 
-            BitacoraService::registrar(
-                "Pago " . ($validated['validar'] ? 'validado' : 'rechazado') . ": {$pago->id}",
-                request()->ip(),
-                Auth::id()
-            );
+            $estadoInscripcion = $validated['validar'] ? 'Pagado' : 'Rechazado';
 
-            return response()->json(['message' => $mensaje]);
+            DB::transaction(function () use ($postulante, $id, $validated, $estadoInscripcion) {
+                // Actualizar el estado de pago de la inscripción (fuente de los contadores)
+                if ($postulante->codigo_inscripcion) {
+                    DB::table('inscripcion')
+                        ->where('id', $postulante->codigo_inscripcion)
+                        ->update(['estado_pago' => $estadoInscripcion]);
+                } else {
+                    $inscripcionId = DB::table('inscripcion')->insertGetId([
+                        'fecha_inscripcion' => now()->toDateString(),
+                        'estado_pago' => $estadoInscripcion,
+                        'codigo_gestion_academica' => 1,
+                    ]);
+                    DB::table('postulante')->where('id', $id)->update(['codigo_inscripcion' => $inscripcionId]);
+                }
+
+                // Reflejar también en la tabla pago (si el postulante tiene registros)
+                DB::table('pago')->where('id_postulante', $id)
+                    ->update(['estado' => $validated['validar'] ? 'Completado' : 'Rechazado']);
+
+                BitacoraService::registrar(
+                    "Pago " . ($validated['validar'] ? 'validado' : 'rechazado') . " (postulante {$id})",
+                    request()->ip(),
+                    request()->session()->get('persona_id')
+                );
+            });
+
+            return response()->json(['message' => $validated['validar'] ? 'Pago validado' : 'Pago rechazado']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -417,19 +494,30 @@ class CU04PagosController extends Controller
      */
     public function descargarReporte(Request $request)
     {
-        $pagos = Pago::query()
-            ->with(['postulante.persona'])
-            ->when($request->estado, fn($q) => $q->where('estado', $request->estado))
-            ->when($request->fecha_inicio, fn($q) => $q->whereDate('fecha_pago', '>=', $request->fecha_inicio))
-            ->when($request->fecha_fin, fn($q) => $q->whereDate('fecha_pago', '<=', $request->fecha_fin))
+        // Reporte basado en POSTULANTES (incluye pendientes y pagados de CU03),
+        // respetando los mismos filtros de la lista.
+        $rows = $this->postulantesPagosQuery($request)
+            ->select(
+                'postulante.id',
+                'postulante.registro',
+                'persona.nombre',
+                'persona.apellido',
+                'persona.ci',
+                'inscripcion.estado_pago',
+                'inscripcion.fecha_inscripcion'
+            )
+            ->orderBy('postulante.id', 'desc')
             ->get();
 
-        // Preparar datos para CSV
-        $csv = "ID,Postulante,CI,Monto,Fecha Pago,Estado,Método Pago,Comprobante\n";
-        foreach ($pagos as $pago) {
-            $nombre = $pago->postulante?->persona?->nombre ?? 'N/A';
-            $ci = $pago->postulante?->persona?->ci ?? 'N/A';
-            $csv .= "{$pago->id},{$nombre},{$ci},{$pago->monto},{$pago->fecha_pago},{$pago->estado},{$pago->metodo_pago},{$pago->comprobante}\n";
+        $csv = "Registro,Postulante,CI,Monto,Fecha,Estado\n";
+        foreach ($rows as $r) {
+            $estadoPago = $r->estado_pago ?: 'Pendiente';
+            $estado = $estadoPago === 'Pagado' ? 'Completado'
+                    : ($estadoPago === 'Rechazado' ? 'Rechazado' : 'Pendiente');
+            $nombre = trim(($r->nombre ?? '') . ' ' . ($r->apellido ?? ''));
+            $monto = $estado === 'Completado' ? '150' : '0';
+            $fecha = $r->fecha_inscripcion ?? '';
+            $csv .= "{$r->registro},{$nombre},{$r->ci},{$monto},{$fecha},{$estado}\n";
         }
 
         return response($csv, 200)

@@ -332,5 +332,20 @@ class DatabaseSeeder extends Seeder
             ['codigo_rol_grupo' => 3, 'codigo_cu' => 'CU03', 'descripcion_cu' => 'Generar Reportes'],
             ['codigo_rol_grupo' => 3, 'codigo_cu' => 'CU05', 'descripcion_cu' => 'Registrar Calificaciones por Materia'],
         ]);
+
+        // ASIGNACION_GRUPO - tabla pivote: poblar desde postulante.codigo_grupo
+        if (\Illuminate\Support\Facades\Schema::hasTable('asignacion_grupo')) {
+            DB::statement("
+                INSERT INTO asignacion_grupo (postulante_id, grupo_codigo)
+                SELECT p.id, p.codigo_grupo
+                FROM postulante p
+                JOIN grupo g ON g.codigo = p.codigo_grupo
+                WHERE p.codigo_grupo IS NOT NULL
+                  AND NOT EXISTS (
+                      SELECT 1 FROM asignacion_grupo a
+                      WHERE a.postulante_id = p.id AND a.grupo_codigo = p.codigo_grupo
+                  )
+            ");
+        }
     }
 }

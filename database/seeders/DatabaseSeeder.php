@@ -129,10 +129,10 @@ class DatabaseSeeder extends Seeder
 
         // DOCENTE
         DB::table('docente')->insert([
-            ['id' => 1, 'codigo' => '1011', 'especialidad' => 'Matemáticas', 'profesional_area' => 'Ciencias Exactas', 'maestria' => 'Maestría en Educación', 'diplomado_educacion_superior' => 'Diplomado en Docencia', 'cantidad_grupos_asignados' => 2],
-            ['id' => 2, 'codigo' => '1012', 'especialidad' => 'Física', 'profesional_area' => 'Ciencias Exactas', 'maestria' => 'Maestría en Física', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 1],
-            ['id' => 3, 'codigo' => '1013', 'especialidad' => 'Computación', 'profesional_area' => 'Ingeniería', 'maestria' => 'Maestría en Informática', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 2],
-            ['id' => 4, 'codigo' => '1014', 'especialidad' => 'Inglés', 'profesional_area' => 'Idiomas', 'maestria' => 'Maestría en Lingüística', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 1],
+            ['id' => 1, 'id_persona' => 11, 'codigo' => '1011', 'especialidad' => 'Matemáticas', 'profesional_area' => 'Ciencias Exactas', 'maestria' => 'Maestría en Educación', 'diplomado_educacion_superior' => 'Diplomado en Docencia', 'cantidad_grupos_asignados' => 2],
+            ['id' => 2, 'id_persona' => 12, 'codigo' => '1012', 'especialidad' => 'Física', 'profesional_area' => 'Ciencias Exactas', 'maestria' => 'Maestría en Física', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 1],
+            ['id' => 3, 'id_persona' => 13, 'codigo' => '1013', 'especialidad' => 'Computación', 'profesional_area' => 'Ingeniería', 'maestria' => 'Maestría en Informática', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 2],
+            ['id' => 4, 'id_persona' => 14, 'codigo' => '1014', 'especialidad' => 'Inglés', 'profesional_area' => 'Idiomas', 'maestria' => 'Maestría en Lingüística', 'diplomado_educacion_superior' => 'Diplomado en Educación', 'cantidad_grupos_asignados' => 1],
         ]);
 
         // ADMINISTRATIVO

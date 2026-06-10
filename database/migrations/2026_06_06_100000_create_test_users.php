@@ -10,8 +10,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Deshabilitar triggers temporalmente
-        DB::statement('ALTER TABLE users DISABLE TRIGGER ALL');
+        // Deshabilitar SOLO los triggers de usuario (TRIGGER ALL incluye los de
+        // sistema y requiere superusuario, que Render no concede).
+        DB::statement('ALTER TABLE users DISABLE TRIGGER USER');
 
         // Crear usuarios de prueba para las personas existentes
         DB::table('users')->insert([
@@ -57,8 +58,8 @@ return new class extends Migration
             ],
         ]);
 
-        // Rehabilitar triggers
-        DB::statement('ALTER TABLE users ENABLE TRIGGER ALL');
+        // Rehabilitar los triggers de usuario
+        DB::statement('ALTER TABLE users ENABLE TRIGGER USER');
     }
 
     public function down(): void

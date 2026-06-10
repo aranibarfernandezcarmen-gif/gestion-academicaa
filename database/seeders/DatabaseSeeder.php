@@ -333,17 +333,18 @@ class DatabaseSeeder extends Seeder
             ['codigo_rol_grupo' => 3, 'codigo_cu' => 'CU05', 'descripcion_cu' => 'Registrar Calificaciones por Materia'],
         ]);
 
-        // ASIGNACION_GRUPO - tabla pivote: poblar desde postulante.codigo_grupo
+        // ASIGNACION_GRUPO - cada postulante cursa TODAS las materias del
+        // preuniversitario => se asigna a CADA grupo existente (uno por materia,
+        // 4 grupos por postulante). Producto cartesiano sin duplicar pares.
         if (\Illuminate\Support\Facades\Schema::hasTable('asignacion_grupo')) {
             DB::statement("
                 INSERT INTO asignacion_grupo (postulante_id, grupo_codigo)
-                SELECT p.id, p.codigo_grupo
+                SELECT p.id, g.codigo
                 FROM postulante p
-                JOIN grupo g ON g.codigo = p.codigo_grupo
-                WHERE p.codigo_grupo IS NOT NULL
-                  AND NOT EXISTS (
+                CROSS JOIN grupo g
+                WHERE NOT EXISTS (
                       SELECT 1 FROM asignacion_grupo a
-                      WHERE a.postulante_id = p.id AND a.grupo_codigo = p.codigo_grupo
+                      WHERE a.postulante_id = p.id AND a.grupo_codigo = g.codigo
                   )
             ");
         }

@@ -49,9 +49,25 @@ services:
       # Cargar datos de prueba en el primer arranque. Cámbialo a false tras el primer deploy.
       - key: RUN_SEED
         value: "true"
-      # Correos en modo log para que el flujo no falle si no configuras SMTP.
+      # Correo por SMTP (Gmail) para que SÍ se envíen los correos (recuperación, etc.).
       - key: MAIL_MAILER
-        value: log
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      # Con puerto 587, Symfony usa STARTTLS automáticamente; dejar MAIL_SCHEME vacío.
+      - key: MAIL_SCHEME
+        value: ""
+      - key: MAIL_USERNAME
+        value: fcalani38@gmail.com
+      # App Password de Gmail (16 caracteres). Se pega en el dashboard de Render (secreto).
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: fcalani38@gmail.com
+      - key: MAIL_FROM_NAME
+        value: "Sistema de Gestion Academica"
       # PayPal (sandbox). Pega tus credenciales si vas a demostrar el pago en línea.
       - key: PAYPAL_MODE
         value: sandbox

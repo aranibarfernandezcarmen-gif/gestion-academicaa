@@ -380,9 +380,11 @@ const processPhysicalPayment = async () => {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     } else if (data.success) {
       sessionStorage.setItem('success', 'Tu inscripción ha sido registrada. Tu pago está PENDIENTE DE VERIFICACIÓN. Una vez verificado, podrás acceder al sistema.');
-      sessionStorage.setItem('registro', data.registro);
-      sessionStorage.setItem('ci', data.ci);
-      window.location.href = route('postulacion.success');
+      sessionStorage.setItem('registro', data.registro ?? '');
+      sessionStorage.setItem('ci', data.ci ?? '');
+      // Pasar registro/ci por query: la navegación full-page pierde el flash de sesión.
+      const params = new URLSearchParams({ registro: data.registro ?? '', ci: data.ci ?? '' });
+      window.location.href = route('postulacion.success') + '?' + params.toString();
     } else {
       alert('Error: ' + (data.error || 'Error al procesar tu solicitud'));
     }

@@ -133,8 +133,10 @@ class PostulacionController extends Controller
     {
         return Inertia::render('PostulacionSuccess', [
             'message' => $request->session()->get('success'),
-            'registro' => $request->session()->get('registro'),
-            'ci' => $request->session()->get('ci'),
+            // Leer también de la query string: el flujo de pago físico navega con
+            // window.location.href (carga completa) y pierde el flash de sesión.
+            'registro' => $request->query('registro') ?: $request->session()->get('registro'),
+            'ci' => $request->query('ci') ?: $request->session()->get('ci'),
         ]);
     }
 

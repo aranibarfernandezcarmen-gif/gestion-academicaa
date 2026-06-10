@@ -54,11 +54,17 @@ const message = computed(() => {
   return props.message || sessionStorage.getItem('success') || 'Tu inscripción ha sido procesada exitosamente.';
 });
 
+// Ignora las cadenas literales 'undefined'/'null' guardadas por error en sessionStorage
+const cleanStore = (key) => {
+  const v = sessionStorage.getItem(key);
+  return (v && v !== 'undefined' && v !== 'null') ? v : '';
+};
+
 const registro = computed(() => {
-  return props.registro || sessionStorage.getItem('registro') || 'N/A';
+  return props.registro || cleanStore('registro') || 'N/A';
 });
 
 const ci = computed(() => {
-  return props.ci || sessionStorage.getItem('ci') || 'N/A';
+  return props.ci || cleanStore('ci') || 'N/A';
 });
 </script>

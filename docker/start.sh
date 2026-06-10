@@ -27,5 +27,7 @@ if [ "$RUN_SEED" = "true" ]; then
   php artisan db:seed --class=FixSequencesSeeder --force || true
 fi
 
-# Servir la app en el puerto que asigna Render
-php artisan serve --host 0.0.0.0 --port "${PORT:-8080}"
+# Servir la app en el puerto que asigna Render.
+# --no-reload es necesario para que PHP_CLI_SERVER_WORKERS tenga efecto (varios
+# procesos), evitando el servidor de un solo hilo y los 404 intermitentes.
+php artisan serve --no-reload --host 0.0.0.0 --port "${PORT:-8080}"

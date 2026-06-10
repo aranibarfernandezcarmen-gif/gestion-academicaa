@@ -11,6 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // La tabla "sessions" ya la crea la migración de usuarios de Laravel
+        // (0001_01_01_000000_create_users_table.php). Evitamos el error
+        // "Duplicate table: sessions already exists" si ya fue creada.
+        if (Schema::hasTable('sessions')) {
+            return;
+        }
+
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

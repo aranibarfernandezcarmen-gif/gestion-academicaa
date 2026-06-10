@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="draw.io" modified="2026-06-09T00:00:00.000Z" agent="5.0" version="21.0.0" type="device">
+  <diagram name="CU12 - Diagrama de Clases de Análisis" id="cu12-clases-analisis">
+    <mxGraphModel dx="2108" dy="1882" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1050" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- TÍTULO -->
+        <mxCell id="title" value="CU12_DiagramaClases_Analisis" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="1400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- ACTOR -->
+        <mxCell id="actor" value="" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="actorLabel" value="Decano" style="text;html=1;align=center;verticalAlign=top;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="15" y="455" width="90" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- FRONTEND (BOUNDARY) -->
+        <mxCell id="frontend" value="&lt;div align=center&gt;&lt;i&gt;«boundary»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Frontend: CU12 Carga Horaria&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-docentesLocal: Array&lt;br&gt;-gruposLocal: Array&lt;br&gt;-grupoEditando: Object&lt;br&gt;-docenteSeleccionado: int&lt;br&gt;-horarioForm: Object&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+mostrarListaDocentes()&lt;br&gt;+mostrarListaGrupos()&lt;br&gt;+asignarDocente()&lt;br&gt;+eliminarAsignacion()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="180" y="300" width="240" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- CONTROLLER (CONTROL) -->
+        <mxCell id="controller" value="&lt;div align=center&gt;&lt;i&gt;«control»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;CU12CargaHorariaController&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+index()&lt;br&gt;+asignarDocente(datos)&lt;br&gt;+eliminarAsignacion(grupo_codigo)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="300" width="240" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- PERSONA (ENTITY) -->
+        <mxCell id="persona" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Persona&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-id: int&lt;br&gt;-ci: String&lt;br&gt;-nombre: String&lt;br&gt;-apellido: String&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="800" y="180" width="210" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- DOCENTE (ENTITY) -->
+        <mxCell id="docente" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Docente&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-id: int&lt;br&gt;-codigo: String&lt;br&gt;-especialidad: String&lt;br&gt;-profesional_area: String&lt;br&gt;-cantidad_grupos_asignados: int&lt;br&gt;-id_persona: int&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="800" y="420" width="230" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- CARGA HORARIA DOCENTE (ENTITY) -->
+        <mxCell id="cargaHoraria" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;CargaHorariaDocente&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-id: int&lt;br&gt;-codigo_docente: int&lt;br&gt;-horas_asignadas: int&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;br&gt;+actualizarHoras()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="420" width="240" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- MATERIA (ENTITY) -->
+        <mxCell id="materia" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Materia&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-codigo: int&lt;br&gt;-sigla: String&lt;br&gt;-nombre_materia: String&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="180" y="560" width="210" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- GRUPO (ENTITY) -->
+        <mxCell id="grupo" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Grupo&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-codigo: int&lt;br&gt;-nombre_grupo: String&lt;br&gt;-codigo_materia: int&lt;br&gt;-codigo_docente: int&lt;br&gt;-codigo_horario: int&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;br&gt;+asignarDocente()&lt;br&gt;+liberarDocente()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="540" width="230" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- HORARIO (ENTITY) -->
+        <mxCell id="horario" value="&lt;div align=center&gt;&lt;i&gt;«entity»&lt;/i&gt;&lt;/div&gt;&lt;div align=center&gt;&lt;b&gt;Horario&lt;/b&gt;&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;-codigo: int&lt;br&gt;-dia: String&lt;br&gt;-hora_inicio: Time&lt;br&gt;-hora_fin: Time&lt;/div&gt;&lt;hr&gt;&lt;div align=left&gt;+consultar()&lt;br&gt;+crear()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;gradientColor=#ffffff;strokeColor=#0e8088;verticalAlign=top;align=center;spacingTop=6;spacingLeft=6;spacingRight=6;spacingBottom=6;" vertex="1" parent="1">
+          <mxGeometry x="480" y="800" width="210" height="170" as="geometry" />
+        </mxCell>
+
+        <!-- RELACIONES -->
+
+        <!-- e1: Decano -> Frontend -->
+        <mxCell id="e1" style="endArrow=none;html=1;strokeWidth=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="actor" target="frontend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e1l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="-0.7" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e1l2" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e1">
+          <mxGeometry x="0.7" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e2: Frontend -> Controller -->
+        <mxCell id="e2" style="endArrow=none;html=1;strokeWidth=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="frontend" target="controller">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e2">
+          <mxGeometry x="-0.7" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e2l2" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e2">
+          <mxGeometry x="0.7" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e3: Controller -> Grupo -->
+        <mxCell id="e3" style="endArrow=none;html=1;strokeWidth=1;exitX=0.4;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="controller" target="grupo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e3l2" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e3">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e4: Controller -> Docente -->
+        <mxCell id="e4" style="endArrow=none;html=1;strokeWidth=1;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="controller" target="docente">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e4l2" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e4">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e5: Grupo -> Materia (relación de dominio) -->
+        <mxCell id="e5" style="endArrow=none;html=1;strokeWidth=1;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="grupo" target="materia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5l1" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e5">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e5l2" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e5">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e6: Grupo -> Horario (relación de dominio) -->
+        <mxCell id="e6" style="endArrow=none;html=1;strokeWidth=1;exitX=0.4;exitY=1;exitDx=0;exitDy=0;entryX=0.4;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="grupo" target="horario">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6l1" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e6">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e6l2" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e6">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e7: Grupo -> Docente (relación de dominio) -->
+        <mxCell id="e7" style="endArrow=none;html=1;strokeWidth=1;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" parent="1" source="grupo" target="docente">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7l1" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e7">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e7l2" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e7">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e8: Docente -> Persona (relación de dominio) -->
+        <mxCell id="e8" style="endArrow=none;html=1;strokeWidth=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="docente" target="persona">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e8">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e8l2" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e8">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+        <!-- e9: Docente -> CargaHorariaDocente (relación de dominio) -->
+        <mxCell id="e9" style="endArrow=none;html=1;strokeWidth=1;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" parent="1" source="docente" target="cargaHoraria">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9l1" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e9">
+          <mxGeometry x="-0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+        <mxCell id="e9l2" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" vertex="1" connectable="0" parent="e9">
+          <mxGeometry x="0.6" y="-10" relative="1" as="geometry"><mxPoint as="offset" /></mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,57 @@
+# Blueprint de Render: crea la base PostgreSQL gratis y el servicio web (Docker)
+# y los conecta automáticamente. En Render: New + > Blueprint > selecciona este repo.
+databases:
+  - name: gestion-academicaa-db
+    databaseName: gestion_academica
+    user: admin
+    plan: free
+
+services:
+  - type: web
+    name: gestion-academicaa
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_NAME
+        value: "Gestion Academica"
+      - key: APP_ENV
+        value: production
+      # Déjalo en true durante el examen para ver errores; cámbialo a false si quieres ocultarlos.
+      - key: APP_DEBUG
+        value: "true"
+      # Pega aquí la APP_KEY generada (formato base64:...). Marcada como secreto.
+      - key: APP_KEY
+        sync: false
+      # URL pública de tu servicio en Render (la copias después del primer deploy).
+      - key: APP_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      # Render inyecta la cadena de conexión interna de la base de arriba.
+      - key: DB_URL
+        fromDatabase:
+          name: gestion-academicaa-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      # Cargar datos de prueba en el primer arranque. Cámbialo a false tras el primer deploy.
+      - key: RUN_SEED
+        value: "true"
+      # Correos en modo log para que el flujo no falle si no configuras SMTP.
+      - key: MAIL_MAILER
+        value: log
+      # PayPal (sandbox). Pega tus credenciales si vas a demostrar el pago en línea.
+      - key: PAYPAL_MODE
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_SECRET
+        sync: false

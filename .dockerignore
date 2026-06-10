@@ -1,0 +1,16 @@
+# No copiar al contexto de build: se reinstalan/generan dentro de la imagen
+/vendor
+/node_modules
+/public/build
+/public/hot
+/.git
+/.github
+/.env
+/.env.*
+!/.env.example
+/tests
+/.idea
+/.vscode
+npm-debug.log
+yarn-error.log
+storage/logs/*.log

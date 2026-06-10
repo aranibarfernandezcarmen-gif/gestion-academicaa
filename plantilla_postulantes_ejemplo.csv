@@ -1,0 +1,11 @@
+CI,Nombre,Apellido,Fecha Nacimiento,Sexo,Direccion,Telefono,Email,Ciudad,Colegio,Titulo Bachiller,Carrera Primera Opcion,Carrera Segunda Opcion
+5487234,Juan,Pérez,1998-05-12,M,Calle 6 de Agosto 234,75241567,juan.perez@gmail.com,La Paz,Colegio Ingavi,Bachiller en Ciencias,Ingeniería en Sistemas,Ingeniería Informática
+6523891,María,García,1999-11-23,F,Avenida Arce 567,76543210,maria.garcia@gmail.com,La Paz,Liceo Femenino,Bachiller en Ciencias,Ingeniería Informática,Redes y Telecomunicaciones
+7142356,Carlos,López,1997-03-08,M,Calle Yanacocha 123,73421098,carlos.lopez@gmail.com,Cochabamba,Colegio Franco Boliviano,Bachiller en Ciencias,Redes y Telecomunicaciones,Ingeniería en Sistemas
+5634729,Ana,Rodríguez,2000-08-15,F,Pasaje Blanco 456,72541630,ana.rodriguez@gmail.com,Sucre,Colegio Técnico,Bachiller Técnico,Ingeniería en Sistemas,Robótica
+6821543,Roberto,Fernández,1998-12-30,M,Avenida Costanera 789,74632189,roberto.fernandez@gmail.com,Santa Cruz,Colegio San Agustín,Bachiller en Ciencias,Ingeniería Informática,Redes y Telecomunicaciones
+7534216,Daniela,Martínez,1999-06-17,F,Calle Ballivián 234,76543219,daniela.martinez@gmail.com,La Paz,Colegio Excelsior,Bachiller en Ciencias,Robótica,Ingeniería en Sistemas
+5712648,Diego,Sánchez,1997-09-22,M,Avenida Saavedra 567,73428156,diego.sanchez@gmail.com,Oruro,Colegio Nacional,Bachiller en Ciencias,Ingeniería en Sistemas,Redes y Telecomunicaciones
+6948372,Lucía,Gutiérrez,2000-02-14,F,Calle Comercio 890,75634289,lucia.gutierrez@gmail.com,Cochabamba,Liceo Moderno,Bachiller Humanístico,Ingeniería Informática,Robótica
+5823619,Miguel,Flores,1998-07-11,M,Pasaje Corina 345,72961548,miguel.flores@gmail.com,La Paz,Colegio Don Bosco,Bachiller Técnico,Ingeniería en Sistemas,Ingeniería Informática
+7456283,Sofía,Villegas,1999-04-26,F,Avenida Villazón 678,74529631,sofia.villegas@gmail.com,Sucre,Colegio Reina María,Bachiller en Ciencias,Redes y Telecomunicaciones,Ingeniería Informática

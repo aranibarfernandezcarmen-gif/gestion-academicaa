@@ -38,13 +38,16 @@ return new class extends Migration
             ->limit(1)  // Mantener uno, eliminar el duplicado
             ->delete();
 
-        // Registrar esta corrección en la bitácora
-        DB::table('bitacora')->insert([
-            'accion' => '[SISTEMA] Bitácora corregida: registros de usuario incorrecto marcados',
-            'fecha_hora' => now(),
-            'ip_origen' => '0.0.0.0',
-            'id_persona' => 1  // Sistema
-        ]);
+        // Registrar esta corrección en la bitácora (solo si existe la persona 1,
+        // evita violar la FK en una BD recién creada sin datos)
+        if (DB::table('persona')->where('id', 1)->exists()) {
+            DB::table('bitacora')->insert([
+                'accion' => '[SISTEMA] Bitácora corregida: registros de usuario incorrecto marcados',
+                'fecha_hora' => now(),
+                'ip_origen' => '0.0.0.0',
+                'id_persona' => 1  // Sistema
+            ]);
+        }
 
         echo "\n✅ Bitácora limpiada y corregida\n";
         echo "   - Registros problemáticos marcados como [DATO_INCORRECTO_FIJADO]\n";

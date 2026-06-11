@@ -2,7 +2,9 @@ import axios from 'axios';
 window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-const tokenElement = document.querySelector('meta[name="csrf-token"]');
-if (tokenElement) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = tokenElement.getAttribute('content');
-}
+
+// CSRF: que axios tome el token de la cookie XSRF-TOKEN (siempre fresca, incluso
+// después de que el login regenere la sesión). Antes se fijaba un X-CSRF-TOKEN del
+// <meta> que quedaba viejo tras iniciar sesión y causaba "Desajuste de tokens CSRF" (419).
+window.axios.defaults.withCredentials = true;
+window.axios.defaults.withXSRFToken = true;

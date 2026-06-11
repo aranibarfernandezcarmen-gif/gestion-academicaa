@@ -879,18 +879,22 @@ class PostulacionController extends Controller
                 'insert_result' => $recovery,
             ]);
 
-            // 6. Enviar email con código
-            try {
-                \Illuminate\Support\Facades\Mail::to($validated['email'])->send(
-                    new \App\Mail\PasswordRecoveryCode($persona->nombre . ' ' . $persona->apellido, $verificationCode, 15)
-                );
-                \Illuminate\Support\Facades\Log::info('[requestPasswordRecovery] Email enviado exitosamente');
-            } catch (\Exception $mailError) {
-                \Illuminate\Support\Facades\Log::error('[requestPasswordRecovery] Error al enviar email', [
-                    'error' => $mailError->getMessage(),
-                ]);
-                // Continuar de todas formas (el código está guardado en BD)
-            }
+            // 6. Enviar email con código por la API de Brevo (HTTPS, no bloqueado por Render)
+            $nombreCompleto = $persona->nombre . ' ' . $persona->apellido;
+            $htmlCorreo = "
+                <h2>Recuperación de contraseña</h2>
+                <p>Hola {$nombreCompleto},</p>
+                <p>Tu código de verificación es:</p>
+                <p style='font-size:28px;font-weight:bold;letter-spacing:6px;color:#1d4ed8'>{$verificationCode}</p>
+                <p>Este código vence en <strong>15 minutos</strong>.</p>
+                <p>Si no solicitaste esto, ignora este correo.</p>
+            ";
+            \App\Services\CorreoService::enviar(
+                $validated['email'],
+                $nombreCompleto,
+                'Código de recuperación de contraseña - CUP',
+                $htmlCorreo
+            );
 
             // 7. Registrar en bitácora
             BitacoraService::registrar(

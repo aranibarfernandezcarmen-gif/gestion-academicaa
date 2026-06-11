@@ -350,9 +350,7 @@ class CU04PagosController extends Controller
             <p>Por favor, cambia tu contraseña después de tu primer acceso.</p>
             ";
 
-            \Illuminate\Support\Facades\Mail::html($mensaje, function ($message) use ($email) {
-                $message->to($email)->subject('Credenciales de Acceso - CUP');
-            });
+            \App\Services\CorreoService::enviar($email, $nombre, 'Credenciales de Acceso - CUP', $mensaje);
 
             // Registrar en bitácora que se enviaron credenciales
             \Illuminate\Support\Facades\Log::info("Credenciales enviadas", [
@@ -395,9 +393,7 @@ class CU04PagosController extends Controller
             <p><strong>URL de Acceso:</strong> <a href='" . url('/postularse/ingresar') . "'>Ingresar</a></p>
             ";
 
-            \Illuminate\Support\Facades\Mail::html($mensaje, function ($message) use ($email) {
-                $message->to($email)->subject('Confirmación de Pago - CUP');
-            });
+            \App\Services\CorreoService::enviar($email, $nombre, 'Confirmación de Pago - CUP', $mensaje);
 
             // Registrar en bitácora que se envió confirmación
             \Illuminate\Support\Facades\Log::info("Confirmación de pago enviada", [

@@ -68,6 +68,10 @@ services:
         value: fcalani38@gmail.com
       - key: MAIL_FROM_NAME
         value: "Sistema de Gestion Academica"
+      # API de Brevo para enviar correos por HTTPS (Render bloquea el SMTP saliente).
+      # Pega tu API key de Brevo en el dashboard de Render (es secreto).
+      - key: BREVO_API_KEY
+        sync: false
       # PayPal (sandbox). Pega tus credenciales si vas a demostrar el pago en línea.
       - key: PAYPAL_MODE
         value: sandbox

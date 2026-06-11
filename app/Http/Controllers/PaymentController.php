@@ -350,7 +350,8 @@ class PaymentController extends Controller
                     'carrera_segunda_opcion_id' => $postulationData['carrera_segunda_opcion_id'] ?: null,
                     'carrera_asignada_id' => null,
                     'estado_asignacion' => 'Pendiente',
-                    'password' => bcrypt($password),
+                    // 'password' eliminado: la tabla postulante no tiene esa columna
+                    // (la contraseña del postulante es su CI / persona.temporary_password).
                 ]);
 
                 // ✅ ACTUALIZAR PAGO CON ID_POSTULANTE

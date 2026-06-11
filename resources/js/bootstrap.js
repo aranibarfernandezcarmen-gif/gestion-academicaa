@@ -8,3 +8,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // <meta> que quedaba viejo tras iniciar sesión y causaba "Desajuste de tokens CSRF" (419).
 window.axios.defaults.withCredentials = true;
 window.axios.defaults.withXSRFToken = true;
+
+// Helper para las llamadas con fetch() (que no usan axios): devuelve el token CSRF
+// fresco desde la cookie XSRF-TOKEN. Enviar como header 'X-XSRF-TOKEN'.
+window.getXsrfToken = () =>
+    decodeURIComponent((document.cookie.match(/(^|;)\s*XSRF-TOKEN=([^;]+)/) || [])[2] || '');

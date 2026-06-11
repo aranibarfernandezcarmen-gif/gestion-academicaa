@@ -299,12 +299,12 @@ const guardarPago = async () => {
       hora_pago: obtenerHoraBolivia(),
     }
     console.log('Payload a enviar:', payload)
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    const csrfToken = window.getXsrfToken()
     const response = await fetch('/api/cu04/pagos', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
+        'X-XSRF-TOKEN': csrfToken,
       },
       body: JSON.stringify(payload),
     })
@@ -332,12 +332,12 @@ const guardarPago = async () => {
 
 const validarPago = async (id, validar) => {
   try {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    const csrfToken = window.getXsrfToken()
     const response = await fetch(`/api/cu04/pagos/${id}/validar`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
+        'X-XSRF-TOKEN': csrfToken,
       },
       body: JSON.stringify({ validar }),
     })

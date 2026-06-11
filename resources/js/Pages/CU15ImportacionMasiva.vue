@@ -256,15 +256,10 @@ const iniciarImportacion = async () => {
   formData.append('descripcion', formulario.value.descripcion)
 
   try {
-    // Obtener token CSRF
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                      window.Laravel?.csrfToken ||
-                      document.querySelector('input[name="_token"]')?.value
-
     const response = await fetch('/api/cu15/importacion', {
       method: 'POST',
       headers: {
-        'X-CSRF-TOKEN': csrfToken,
+        'X-XSRF-TOKEN': window.getXsrfToken(),
       },
       body: formData,
     })
@@ -302,6 +297,7 @@ const procesarImportacion = async (id) => {
   try {
     const response = await fetch(`/api/cu15/importacion/${id}/procesar`, {
       method: 'POST',
+      headers: { 'X-XSRF-TOKEN': window.getXsrfToken() },
     })
     if (response.ok) {
       alert('Importación procesada')
@@ -318,6 +314,7 @@ const cancelarImportacion = async (id) => {
   try {
     const response = await fetch(`/api/cu15/importacion/${id}/cancelar`, {
       method: 'POST',
+      headers: { 'X-XSRF-TOKEN': window.getXsrfToken() },
     })
     if (response.ok) {
       alert('Importación cancelada')

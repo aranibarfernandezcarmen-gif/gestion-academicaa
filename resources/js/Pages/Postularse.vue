@@ -336,7 +336,7 @@ const processPayPal = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+        'X-XSRF-TOKEN': window.getXsrfToken(),
       },
       body: JSON.stringify(buildPayload()),
     });
@@ -368,7 +368,7 @@ const processPhysicalPayment = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+        'X-XSRF-TOKEN': window.getXsrfToken(),
       },
       body: JSON.stringify(buildPayload()),
     });

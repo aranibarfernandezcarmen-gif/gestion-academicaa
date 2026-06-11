@@ -66,7 +66,17 @@ class CU14CalendarioController extends Controller
 
     public function destroyGestion($codigo)
     {
-        DB::table('gestion_academica')->where('codigo', $codigo)->delete();
+        try {
+            DB::table('gestion_academica')->where('codigo', $codigo)->delete();
+        } catch (\Illuminate\Database\QueryException $e) {
+            // 23503 = foreign key violation: la gestión tiene datos asociados.
+            if ($e->getCode() === '23503' || str_contains($e->getMessage(), '23503')) {
+                return response()->json([
+                    'message' => 'No se puede eliminar esta gestión porque tiene datos asociados (cupos, inscripciones, calificaciones, etc.). Elimina o reasigna esos datos primero.'
+                ], 409);
+            }
+            throw $e;
+        }
         return response()->json(['message' => 'Gestión académica eliminada.']);
     }
 

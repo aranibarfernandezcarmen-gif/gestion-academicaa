@@ -12,6 +12,7 @@ export function useSessionValidation() {
     const isValidating = ref(false);
     let validationInterval = null;
     let abortController = null;
+    let failCount = 0; // fallos consecutivos: solo se cierra sesión tras 2 seguidos
 
     /**
      * Validar sesión llamando al servidor
@@ -42,16 +43,22 @@ export function useSessionValidation() {
             // Si recibimos 200, sesión es válida
             if (response.status === 200 && response.data.valid) {
                 isSessionValid.value = true;
+                failCount = 0;
                 return true;
             }
 
         } catch (error) {
-            // Si error 401, 403, o redirección, sesión no válida
+            // 401/403: exigir 2 fallos consecutivos antes de cerrar sesión, para evitar
+            // el "entra y se sale" por una carrera/fallo transitorio justo tras el login.
             if (error.response?.status === 401 || error.response?.status === 403) {
-                console.warn('⚠️ Sesión invalidada detectada');
-                isSessionValid.value = false;
-                redirectToLogin('Sesión cerrada en otro dispositivo');
-                return false;
+                failCount++;
+                if (failCount >= 2) {
+                    console.warn('⚠️ Sesión invalidada detectada (2 fallos consecutivos)');
+                    isSessionValid.value = false;
+                    redirectToLogin('Sesión cerrada en otro dispositivo');
+                    return false;
+                }
+                return true;
             }
 
             // Si es error de red, ignorar (puede ser conexión lenta)
@@ -92,15 +99,16 @@ export function useSessionValidation() {
     const startValidation = () => {
         if (validationInterval) return; // Ya está corriendo
 
-        console.debug('🔄 Iniciando validación de sesión cada 2 segundos');
+        console.debug('🔄 Iniciando validación de sesión cada 5 segundos');
 
-        // Validación inmediata al iniciar
-        validateSession();
+        // Primera validación CON MARGEN (4s) para no chocar con el establecimiento
+        // de la cookie de sesión justo después del login (evita el "entra y se sale").
+        setTimeout(() => validateSession(), 4000);
 
-        // Luego cada 2 segundos
+        // Luego cada 5 segundos
         validationInterval = setInterval(() => {
             validateSession();
-        }, 2000);
+        }, 5000);
     };
 
     /**

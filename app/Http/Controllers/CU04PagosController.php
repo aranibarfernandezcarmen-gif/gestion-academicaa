@@ -259,9 +259,11 @@ class CU04PagosController extends Controller
 
             // Registrar el pago
             if ($postulanteId) {
-                DB::transaction(function () use ($validated, $postulanteId, $password) {
+                $emailData = null;
+
+                DB::transaction(function () use ($validated, $postulanteId, &$emailData) {
                     // Crear pago
-                    $pago = Pago::create([
+                    Pago::create([
                         'id_postulante' => $postulanteId,
                         'monto' => $validated['monto'],
                         'fecha_pago' => $validated['fecha_pago'],
@@ -273,26 +275,11 @@ class CU04PagosController extends Controller
                         'estado' => 'Completado',
                     ]);
 
-                    // Obtener datos del postulante para enviar email
                     $postulante = DB::table('postulante')
                         ->join('persona', 'postulante.id_persona', '=', 'persona.id')
                         ->select('persona.nombre', 'persona.apellido', 'persona.correo_electronico', 'persona.ci', 'postulante.registro', 'postulante.codigo_inscripcion')
                         ->where('postulante.id', $postulanteId)
                         ->first();
-
-                    // Enviar email de confirmación de pago
-                    if ($postulante && $postulante->correo_electronico) {
-                        $nombreCompleto = trim($postulante->nombre . ' ' . $postulante->apellido);
-                        // Usar CI como contraseña temporal
-                        $this->sendPaymentConfirmation(
-                            $postulante->correo_electronico,
-                            $nombreCompleto,
-                            $validated['monto'],
-                            $validated['comprobante'],
-                            $postulante->registro,
-                            $postulante->ci
-                        );
-                    }
 
                     // Actualizar estado de la inscripción a Pagado
                     if ($postulante && $postulante->codigo_inscripcion) {
@@ -314,12 +301,29 @@ class CU04PagosController extends Controller
                     BitacoraService::registrar(
                         "Pago registrado en CU04 - Monto: {$validated['monto']}, Postulante: {$postulanteId}",
                         request()->ip(),
-                        Auth::id()
+                        request()->session()->get('persona_id')
                     );
+
+                    if ($postulante && $postulante->correo_electronico) {
+                        $emailData = $postulante;
+                    }
                 });
 
+                // Enviar correo de confirmación FUERA de la transacción (best-effort).
+                // El timeout corto del SMTP evita que el guardado se cuelgue si Render bloquea el correo.
+                if ($emailData) {
+                    $this->sendPaymentConfirmation(
+                        $emailData->correo_electronico,
+                        trim($emailData->nombre . ' ' . $emailData->apellido),
+                        $validated['monto'],
+                        $validated['comprobante'],
+                        $emailData->registro,
+                        $emailData->ci
+                    );
+                }
+
                 return response()->json([
-                    'message' => 'Pago registrado exitosamente. Credenciales enviadas al correo del postulante.',
+                    'message' => 'Pago registrado exitosamente.',
                     'credenciales' => $credencialResponse
                 ], 201);
             } else {

@@ -285,7 +285,7 @@ class UsuarioRolController extends Controller
 
             DB::transaction(function () use ($tipo, $personaId) {
                 // Deshabilitar el trigger de auditoría antes de eliminar
-                DB::statement('ALTER TABLE persona DISABLE TRIGGER ALL');
+                DB::statement('ALTER TABLE persona DISABLE TRIGGER USER');
                 
                 try {
                     // Registrar ANTES de eliminar
@@ -310,7 +310,7 @@ class UsuarioRolController extends Controller
                     DB::table('persona')->where('id', $personaId)->delete();
                 } finally {
                     // Reabilitar el trigger
-                    DB::statement('ALTER TABLE persona ENABLE TRIGGER ALL');
+                    DB::statement('ALTER TABLE persona ENABLE TRIGGER USER');
                 }
             });
 
@@ -332,7 +332,7 @@ class UsuarioRolController extends Controller
         ]);
 
         // Deshabilitar triggers durante operación de permisos
-        DB::statement('ALTER TABLE rol_grupo_privilegio DISABLE TRIGGER ALL');
+        DB::statement('ALTER TABLE rol_grupo_privilegio DISABLE TRIGGER USER');
         
         try {
             // Borrar permisos antiguos
@@ -350,7 +350,7 @@ class UsuarioRolController extends Controller
             }
         } finally {
             // Re-habilitar triggers
-            DB::statement('ALTER TABLE rol_grupo_privilegio ENABLE TRIGGER ALL');
+            DB::statement('ALTER TABLE rol_grupo_privilegio ENABLE TRIGGER USER');
         }
 
         return response()->json(['message' => 'Permisos asignados correctamente'], 200);

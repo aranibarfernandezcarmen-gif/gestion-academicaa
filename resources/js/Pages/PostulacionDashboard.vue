@@ -32,6 +32,12 @@
               class="px-4 py-2 rounded text-sm font-semibold transition">
               Boleta de Inscripción
             </button>
+            <!-- Accesos a CU otorgados por CU02 -->
+            <a v-for="acc in accesosOtorgados" :key="acc.codigo"
+              :href="obtenerRuta(0, acc.codigo)" :title="acc.nombre"
+              class="px-4 py-2 rounded text-sm font-semibold text-blue-200 hover:bg-white/10 hover:text-white transition whitespace-nowrap">
+              {{ acc.codigo }}
+            </a>
           </div>
 
           <!-- Derecha: notificaciones + usuario + cerrar sesión -->
@@ -401,6 +407,12 @@
               class="px-4 py-2 rounded text-sm font-semibold transition">
               Mi Perfil
             </button>
+            <!-- Accesos a CU otorgados por CU02 -->
+            <a v-for="acc in accesosOtorgados" :key="acc.codigo"
+              :href="obtenerRuta(0, acc.codigo)" :title="acc.nombre"
+              class="px-4 py-2 rounded text-sm font-semibold text-green-200 hover:bg-white/10 hover:text-white transition whitespace-nowrap">
+              {{ acc.codigo }}
+            </a>
           </div>
 
           <!-- Derecha: notificaciones + usuario + cerrar sesión -->
@@ -1100,6 +1112,13 @@ const filteredMenus = computed(() => {
     return menus;
   }
   return menus.map(panel => panel.filter(item => props.allowedCus.includes(item.codigo)));
+});
+
+// CU otorgados al usuario (vía CU02), excepto CU01 (login). Se muestran como accesos
+// en las vistas de Postulante y Docente, que no tienen el menú completo de CU.
+const accesosOtorgados = computed(() => {
+  if (!props.allowedCus) return [];
+  return filteredMenus.value.flat().filter(item => item.codigo !== 'CU01');
 });
 
 const rutasCU = {
